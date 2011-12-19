@@ -1,7 +1,11 @@
 from pyrally.models import Story, Defect
+from pyrally.rally_access import get_accessor
 
 
 class RallyAPIClient(object):
+
+    def __init__(self, username, password):
+        self.rally_access = get_accessor(username, password)
 
     def get_all_in_kanban_state(self, kanban_state):
         """
@@ -17,3 +21,4 @@ class RallyAPIClient(object):
         stories = Story.get_all_in_kanban_state(kanban_state)
         defects = Defect.get_all_in_kanban_state(kanban_state)
         return {'stories': stories, 'defects': defects}
+

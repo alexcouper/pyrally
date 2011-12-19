@@ -7,15 +7,17 @@ from pyrally import settings
 class UnexpectedResponse(Exception):
     pass
 
-
 ACCESSOR = None
 
 
-def get_accessor():
+def get_accessor(username=None, password=None):
     global ACCESSOR
     if not ACCESSOR:
-        ACCESSOR = RallyAccessor(settings.RALLY_USERNAME,
-                                 settings.RALLY_PASSWORD)
+        if not (username and password):
+            raise Exception('RallyAccessor must be established'
+                            ' before accessing without username and password. '
+                            'Try instantiating a client object first.')
+        ACCESSOR = RallyAccessor(username, password)
     return ACCESSOR
 
 
