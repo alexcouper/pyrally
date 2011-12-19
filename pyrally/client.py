@@ -22,3 +22,14 @@ class RallyAPIClient(object):
         defects = Defect.get_all_in_kanban_state(kanban_state)
         return {'stories': stories, 'defects': defects}
 
+    def get_story_by_name(self, story_name):
+        """
+        Return the story with the name ``story_name``.
+
+        :param story_name:
+            The USXXX story id of the story.
+
+        :returns:
+            A ``Story`` object.
+        """
+        return Story.get_by_name(story_name)

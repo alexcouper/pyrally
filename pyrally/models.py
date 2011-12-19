@@ -55,13 +55,13 @@ class BaseRallyModel(object):
 
         rally_data = object.__getattribute__(self, 'rally_data')
         if attr_name in rally_data:
-            if '_ref' in rally_data[attr_name]:
-                rally_name = rally_data[attr_name]['_type']
+            rally_item = rally_data[attr_name]
+            if isinstance(rally_item, dict) and '_ref' in rally_item:
+                rally_name = rally_item['_type']
                 object_class = API_OBJECT_TYPES.get(rally_name, BaseRallyModel)
-                return object_class.create_from_ref(
-                                                 rally_data[attr_name]['_ref'])
+                return object_class.create_from_ref(rally_item['_ref'])
             else:
-                return rally_data[attr_name]
+                return rally_item
         else:
             return object.__getattribute__(self, attr_name)
 
@@ -100,10 +100,31 @@ class Task(BaseRallyModel):
 class Story(BaseRallyModel):
     rally_name = 'HierarchicalRequirement'
 
+    def __init__(self, *args, **kwargs):
+        self._full_tasks = None
+        super(Story, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def get_by_name(cls, story_name):
+        clauses = ['FormattedId = "{0}"'.format(story_name)]
+        return cls.get_all_by_attrs(clauses)[0]
+
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):
         clauses = ['KanbanState = "{0}"'.format(kanban_state)]
         return cls.get_all_by_attrs(clauses)
+
+    @property
+    def tasks(self):
+        if not self._full_tasks:
+            self._full_tasks = []
+            for task in self.rally_data.get('Tasks', []):
+                self._full_tasks.append(Task.create_from_ref(task['_ref']))
+        return self._full_tasks
+
+    @property
+    def name(self):
+        return self._refObjectName
 
 
 class Defect(BaseRallyModel):

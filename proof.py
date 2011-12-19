@@ -5,6 +5,21 @@ from pyrally import settings
 
 rac = RallyAPIClient(settings.RALLY_USERNAME, settings.RALLY_PASSWORD)
 
-for kb_state in KANBAN_STATES:
-    objs = rac.get_all_in_kanban_state(kb_state)
-    print kb_state, objs
+dict_obj = rac.get_all_in_kanban_state('In QA Testing')
+
+story = rac.get_story_by_name('us524')
+print story.Description
+print story.name
+print story.FormattedID
+
+# print dict_obj
+# for story in dict_obj['stories']:
+#     print story.__dict__
+#     print story.Tasks
+#     print story.tasks
+#     print story.mbfshipmenthandling
+#     print story.mbfwarehousescreens
+
+# for kb_state in KANBAN_STATES:
+#     objs = rac.get_all_in_kanban_state(kb_state)
+#     print kb_state, objs
