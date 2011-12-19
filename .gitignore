@@ -1,0 +1,12 @@
+*.pyc
+*.swp
+*.tar.gz
+bin
+build
+docs/_build
+include
+lib
+log
+man
+.coverage
+pip-log.txt
