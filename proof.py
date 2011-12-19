@@ -10,26 +10,25 @@ print story.Owner.DisplayName
 story = rac.get_story_by_name('us124')
 print story.__dict__
 print story.Owner
-print story.Owner.DisplayName
-
+print story.title
 
 dict_obj = rac.get_all_in_kanban_state('In QA Testing')
 print dict_obj
 
 story = rac.get_entity_by_name('us524')
 defect = rac.get_entity_by_name('de92')
-print story.name
-print defect.name
+print story.title
+print defect.title
 
 story = rac.get_story_by_name('us524')
 print story.Description
-print story.name
+print story.title
 print story.FormattedID
 print story.Blocked
 
 defect = rac.get_defect_by_name('de92')
 print defect.Description
-print defect.name
+print defect.title
 print defect.FormattedID
 print defect.tasks
 print defect.Blocked

@@ -159,7 +159,7 @@ class BaseRallyModel(object):
         return cls.get_all_by_attrs(clauses)[0]
 
     @property
-    def name(self):
+    def title(self):
         return self._refObjectName
 
 
