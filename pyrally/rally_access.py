@@ -46,6 +46,7 @@ class RallyAccessor(object):
             full_url = '{0}{1}'.format(self.api_url, url)
         else:
             full_url = url
+        print full_url
         data = urllib2.urlopen(full_url).read()
         return simplejson.loads(data)
 

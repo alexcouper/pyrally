@@ -7,6 +7,10 @@ from pyrally.rally_access import get_accessor
 API_OBJECT_TYPES = {}
 
 
+class ReferenceNotFoundException(Exception):
+    pass
+
+
 def register_type(class_type):
     global API_OBJECT_TYPES
     API_OBJECT_TYPES[class_type.rally_name] = class_type
@@ -90,7 +94,10 @@ class BaseRallyModel(object):
             if isinstance(rally_item, dict) and '_ref' in rally_item:
                 rally_name = rally_item['_type']
                 object_class = API_OBJECT_TYPES.get(rally_name, BaseRallyModel)
-                return object_class.create_from_ref(rally_item['_ref'])
+                try:
+                    return object_class.create_from_ref(rally_item['_ref'])
+                except ReferenceNotFoundException:
+                    return None
             else:
                 return rally_item
         else:
@@ -128,6 +135,16 @@ class BaseRallyModel(object):
     @classmethod
     def create_from_ref(cls, reference):
         response = get_accessor().make_api_call(reference, True)
+        errors = response.get('OperationResult', {'Errors': []}).get('Errors')
+        if errors:
+            msg = """
+        Failure: {0}-{1}: {2}.
+        If you called this directly, check that you've got the right reference
+        number.
+        Otherwise, it's highly likely that the reference was left hanging
+        around in Rally after a delete (eg if a User was deleted).
+        """.format(cls, reference, errors)
+            raise ReferenceNotFoundException(msg)
         return cls(response)
 
     @classmethod

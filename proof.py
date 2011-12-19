@@ -5,7 +5,16 @@ from pyrally import settings
 
 rac = RallyAPIClient(settings.RALLY_USERNAME, settings.RALLY_PASSWORD)
 
-#dict_obj = rac.get_all_in_kanban_state('In QA Testing')
+story = rac.get_story_by_name('us524')
+print story.Owner.DisplayName
+story = rac.get_story_by_name('us124')
+print story.__dict__
+print story.Owner
+print story.Owner.DisplayName
+
+
+dict_obj = rac.get_all_in_kanban_state('In QA Testing')
+print dict_obj
 
 story = rac.get_entity_by_name('us524')
 defect = rac.get_entity_by_name('de92')
