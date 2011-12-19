@@ -174,7 +174,7 @@ class Task(BaseRallyModel):
 
 class Story(BaseRallyModel):
     rally_name = 'HierarchicalRequirement'
-    sub_objects_dynamic_loader = {'tasks': 'Tasks'}
+    sub_objects_dynamic_loader = {'tasks': 'Tasks', 'children': 'Children'}
 
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):
