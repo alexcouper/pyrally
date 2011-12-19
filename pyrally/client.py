@@ -1,4 +1,4 @@
-from pyrally.models import Story, Defect
+from pyrally.models import Story, Defect, Artifact
 from pyrally.rally_access import get_accessor
 
 
@@ -45,3 +45,16 @@ class RallyAPIClient(object):
             A ``Defect`` object.
         """
         return Defect.get_by_name(defect_name)
+
+    def get_entity_by_name(self, entity_name):
+        """
+        Return the entity with the name ``entity_name``.
+
+        :param entity_name:
+            The YYXXX id of the story/defect/task.
+
+        :returns:
+            A ``BaseRallyModel`` inheritted object, or None if no artifacts
+            could be found.
+        """
+        return Artifact.get_by_name(entity_name)

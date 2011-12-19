@@ -116,7 +116,8 @@ class BaseRallyModel(object):
     @classmethod
     def create_from_query_result(cls, query_result_dict):
         if query_result_dict['QueryResult']['Errors']:
-            raise Exception('Errors in query')
+            raise Exception('Errors in query: {0}'.format(
+                                query_result_dict['QueryResult']['Errors']))
         results = []
         for result in query_result_dict['QueryResult']['Results']:
             object_class = API_OBJECT_TYPES.get(result['_type'],
@@ -137,7 +138,7 @@ class BaseRallyModel(object):
 
     @classmethod
     def get_by_name(cls, story_name):
-        clauses = ['FormattedId = "{0}"'.format(story_name)]
+        clauses = ['FormattedID = "{0}"'.format(story_name)]
         return cls.get_all_by_attrs(clauses)[0]
 
     @property
@@ -180,4 +181,27 @@ class User(BaseRallyModel):
 
 class Iteration(BaseRallyModel):
     rally_name = 'Iteration'
+
+
+class Artifact(BaseRallyModel):
+    rally_name = 'Artifact'
+
+    @classmethod
+    def get_by_name(cls, name):
+        """Get an artifact by name.
+
+        :param name:
+            The name of the artifact (eg US323 or de12)
+
+        :returns:
+            A BaseRallyModel inherited object containing the details of the
+            relevant matching object, or ``None`` if one couldn't be found.
+        """
+        clauses = ['FormattedID = "{0}"'.format(name)]
+        all_artifacts = cls.get_all_by_attrs(clauses)
+        # Strangely, this returns for us444: de444, ta444 and us444.
+        for artifact in all_artifacts:
+            if artifact.FormattedID.lower() == name.lower():
+                return artifact
+        return None
 
