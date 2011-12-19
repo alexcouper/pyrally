@@ -33,3 +33,15 @@ class RallyAPIClient(object):
             A ``Story`` object.
         """
         return Story.get_by_name(story_name)
+
+    def get_defect_by_name(self, defect_name):
+        """
+        Return the defect with the name ``defect_name``.
+
+        :param defect_name:
+            The DEXXX defect id of the defect.
+
+        :returns:
+            A ``Defect`` object.
+        """
+        return Defect.get_by_name(defect_name)

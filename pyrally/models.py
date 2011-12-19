@@ -44,13 +44,44 @@ class RegisterModels(type):
 class BaseRallyModel(object):
 
     __metaclass__ = RegisterModels
+    sub_objects_dynamic_loader = {}
+    """A dictionary of ``property_name``: ``key_name``.
+
+    Where ``property_name`` is the name of a property on the class which
+    refers to a dynamically loaded list of items found in the ``rally_data``
+    key ``key_name``.
+    """
 
     def __init__(self, data_dict):
+        self._full_sub_objects = {}
         self.rally_data = {}
         self.rally_data = data_dict[self.rally_name]
 
     def __getattribute__(self, attr_name):
-        if attr_name == 'rally_data':
+        """Patch the default __getattribute__ call to be better for us.
+
+        Rather than *only* looking at the __dict__ of the object do determine
+        attribute resolution, improve so that:
+
+            * Attributes are looked at in the underlying ``rally_data`` stored
+              against the object.
+
+                * If found in this data and it is a dictionary, load a new
+                  python object up with the data.
+                * Otherwise, just return the data.
+
+            * If not found there, attributes are looked at in
+              ``sub_objects_dynamic_loader``. This is a dictionary of
+              ``property_name`` to ``rally_data`` key. If ``attr_name`` exists
+              in this mapping, the corresponding data is dynamically loaded and
+              returned.
+            * If neither of these yield results, return the standard object
+              __getattribute__ result.
+        """
+        # Filter out the attributes we require to make decisions in this
+        # method. Otherwise, we'll get "Maximum recursion depth" errors.
+        if attr_name in ['rally_data', 'sub_objects_dynamic_loader',
+                         '_full_sub_objects']:
             return object.__getattribute__(self, attr_name)
 
         rally_data = object.__getattribute__(self, 'rally_data')
@@ -63,6 +94,23 @@ class BaseRallyModel(object):
             else:
                 return rally_item
         else:
+            # If it is not in the rally data, let's check if we're trying to
+            # access an auto-loading attribute.
+            if attr_name in self.sub_objects_dynamic_loader:
+
+                if attr_name not in self._full_sub_objects:
+                    rally_data_equivalent = \
+                                    self.sub_objects_dynamic_loader[attr_name]
+                    self._full_sub_objects[attr_name] = []
+                    for skeleton in self.rally_data.get(rally_data_equivalent,
+                                                        []):
+                        rally_name = skeleton['_type']
+                        object_class = API_OBJECT_TYPES.get(rally_name,
+                                                            BaseRallyModel)
+                        self._full_sub_objects[attr_name].append(
+                                    object_class.create_from_ref(
+                                                             skeleton['_ref']))
+                return self._full_sub_objects[attr_name]
             return object.__getattribute__(self, attr_name)
 
     @classmethod
@@ -87,6 +135,15 @@ class BaseRallyModel(object):
         url = "{0}.js?query=({1})".format(cls.rally_name.lower(), query_string)
         return cls.create_from_query_result(get_accessor().make_api_call(url))
 
+    @classmethod
+    def get_by_name(cls, story_name):
+        clauses = ['FormattedId = "{0}"'.format(story_name)]
+        return cls.get_all_by_attrs(clauses)[0]
+
+    @property
+    def name(self):
+        return self._refObjectName
+
 
 class Task(BaseRallyModel):
     rally_name = 'Task'
@@ -99,36 +156,17 @@ class Task(BaseRallyModel):
 
 class Story(BaseRallyModel):
     rally_name = 'HierarchicalRequirement'
-
-    def __init__(self, *args, **kwargs):
-        self._full_tasks = None
-        super(Story, self).__init__(*args, **kwargs)
-
-    @classmethod
-    def get_by_name(cls, story_name):
-        clauses = ['FormattedId = "{0}"'.format(story_name)]
-        return cls.get_all_by_attrs(clauses)[0]
+    sub_objects_dynamic_loader = {'tasks': 'Tasks'}
 
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):
         clauses = ['KanbanState = "{0}"'.format(kanban_state)]
         return cls.get_all_by_attrs(clauses)
 
-    @property
-    def tasks(self):
-        if not self._full_tasks:
-            self._full_tasks = []
-            for task in self.rally_data.get('Tasks', []):
-                self._full_tasks.append(Task.create_from_ref(task['_ref']))
-        return self._full_tasks
-
-    @property
-    def name(self):
-        return self._refObjectName
-
 
 class Defect(BaseRallyModel):
     rally_name = "Defect"
+    sub_objects_dynamic_loader = {'tasks': 'Tasks'}
 
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):

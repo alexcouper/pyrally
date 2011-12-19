@@ -11,6 +11,14 @@ story = rac.get_story_by_name('us524')
 print story.Description
 print story.name
 print story.FormattedID
+print story.Blocked
+
+defect = rac.get_defect_by_name('de92')
+print defect.Description
+print defect.name
+print defect.FormattedID
+print defect.tasks
+print defect.Blocked
 
 # print dict_obj
 # for story in dict_obj['stories']:
