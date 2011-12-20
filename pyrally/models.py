@@ -59,7 +59,7 @@ class BaseRallyModel(object):
     def __init__(self, data_dict):
         self._full_sub_objects = {}
         self.rally_data = {}
-        self.rally_data = data_dict[self.rally_name]
+        self.rally_data = data_dict#[self.rally_name]
 
     def __getattribute__(self, attr_name):
         """Patch the default __getattribute__ call to be better for us.
@@ -121,18 +121,6 @@ class BaseRallyModel(object):
             return object.__getattribute__(self, attr_name)
 
     @classmethod
-    def create_from_query_result(cls, query_result_dict):
-        if query_result_dict['QueryResult']['Errors']:
-            raise Exception('Errors in query: {0}'.format(
-                                query_result_dict['QueryResult']['Errors']))
-        results = []
-        for result in query_result_dict['QueryResult']['Results']:
-            object_class = API_OBJECT_TYPES.get(result['_type'],
-                                                BaseRallyModel)
-            results.append(object_class.create_from_ref(result['_ref']))
-        return results
-
-    @classmethod
     def create_from_ref(cls, reference):
         response = get_accessor().make_api_call(reference, True)
         errors = response.get('OperationResult', {'Errors': []}).get('Errors')
@@ -145,18 +133,80 @@ class BaseRallyModel(object):
         around in Rally after a delete (eg if a User was deleted).
         """.format(cls, reference, errors)
             raise ReferenceNotFoundException(msg)
-        return cls(response)
+        return cls(response[cls.rally_name])
 
     @classmethod
-    def get_all_by_attrs(cls, clauses):
-        query_string = get_query_clauses(clauses)
-        url = "{0}.js?query=({1})".format(cls.rally_name.lower(), query_string)
-        return cls.create_from_query_result(get_accessor().make_api_call(url))
+    def get_all(cls, clauses=None):
+        if clauses:
+            query_string = get_query_clauses(clauses)
+        else:
+            query_string = ''
+        results = cls.get_all_results_for_query(query_string)
+
+        return cls.convert_from_query_result(results, full_objects=True)
+
+    @classmethod
+    def get_all_results_for_query(cls, query_string):
+        """
+        Return all the results for the given query.
+
+        Increment the ``start`` argument until entire result set has been
+        retrieved and return just the results.
+
+        :param query_string:
+            The query to filter results by. If None, all results are returned
+            for the object.
+
+        :returns:
+            A list of results.
+        """
+        def get_results_page(query_string, start_index=1):
+            query_arg = ""
+            if query_string:
+                query_arg = "query=({0})&".format(query_string)
+
+            url = "{0}.js?{1}pagesize=100&start={2}&fetch=true".format(
+                            cls.rally_name.lower(), query_arg, start_index)
+            query_result_dict = get_accessor().make_api_call(url)
+            if query_result_dict['QueryResult']['Errors']:
+                raise Exception('Errors in query: {0}'.format(
+                                 query_result_dict['QueryResult']['Errors']))
+            return query_result_dict['QueryResult']
+
+        more_pages = True
+        start_index = 1
+        all_results = []
+        while more_pages:
+            query_result_dict = get_results_page(query_string, start_index)
+            all_results.extend(query_result_dict['Results'])
+            start_index = (query_result_dict['PageSize'] +
+                           query_result_dict['StartIndex'])
+            more_pages = start_index < query_result_dict['TotalResultCount']
+
+        return all_results
+
+    @classmethod
+    def convert_from_query_result(cls, results, full_objects=False):
+        """Convert a set of Rally results into python objects.
+
+        This involves asking for more information from Rally regarding the
+        object using the ``_ref`` key in the result.
+        """
+        converted_results = []
+        for result in results:
+            object_class = API_OBJECT_TYPES.get(result['_type'],
+                                                BaseRallyModel)
+            if full_objects:
+                new_obj = object_class(result)
+            else:
+                new_obj = object_class.create_from_ref(result['_ref'])
+            converted_results.append(new_obj)
+        return converted_results
 
     @classmethod
     def get_by_name(cls, story_name):
         clauses = ['FormattedID = "{0}"'.format(story_name)]
-        return cls.get_all_by_attrs(clauses)[0]
+        return cls.get_all(clauses)[0]
 
     @property
     def title(self):
@@ -169,7 +219,7 @@ class Task(BaseRallyModel):
     @classmethod
     def get_all_for_story(cls, story_id):
         clauses = ['WorkProduct.FormattedId = "{0}"'.format(story_id)]
-        return cls.get_all_by_attrs(clauses)
+        return cls.get_all(clauses)
 
 
 class Story(BaseRallyModel):
@@ -179,7 +229,7 @@ class Story(BaseRallyModel):
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):
         clauses = ['KanbanState = "{0}"'.format(kanban_state)]
-        return cls.get_all_by_attrs(clauses)
+        return cls.get_all(clauses)
 
 
 class Defect(BaseRallyModel):
@@ -189,7 +239,7 @@ class Defect(BaseRallyModel):
     @classmethod
     def get_all_in_kanban_state(cls, kanban_state):
         clauses = ['KanbanState = "{0}"'.format(kanban_state)]
-        return cls.get_all_by_attrs(clauses)
+        return cls.get_all(clauses)
 
 
 class User(BaseRallyModel):
@@ -215,7 +265,7 @@ class Artifact(BaseRallyModel):
             relevant matching object, or ``None`` if one couldn't be found.
         """
         clauses = ['FormattedID = "{0}"'.format(name)]
-        all_artifacts = cls.get_all_by_attrs(clauses)
+        all_artifacts = cls.get_all(clauses)
         # Strangely, this returns for us444: de444, ta444 and us444.
         for artifact in all_artifacts:
             if artifact.FormattedID.lower() == name.lower():

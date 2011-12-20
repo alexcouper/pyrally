@@ -1,11 +1,15 @@
 from pyrally.settings import KANBAN_STATES
 from pyrally.client import RallyAPIClient
 from pyrally import settings
-
+from pyrally.models import Story
 
 rac = RallyAPIClient(settings.RALLY_USERNAME, settings.RALLY_PASSWORD)
 
+all_stories = Story.get_all()
+print len(all_stories)
+
 story = rac.get_story_by_name('us524')
+print story
 print story.Owner.DisplayName
 story = rac.get_story_by_name('us124')
 print story.__dict__
