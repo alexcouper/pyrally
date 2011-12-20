@@ -7,6 +7,15 @@ class RallyAPIClient(object):
     def __init__(self, username, password):
         self.rally_access = get_accessor(username, password)
 
+    def get_all_entities(self):
+        """
+        Get all stories, defects and tasks.
+
+        :returns:
+            A list of ``BaseRallyModel`` inherited objects.
+        """
+        return Artifact.get_all()
+
     def get_all_in_kanban_state(self, kanban_state):
         """
         Get all stories and defects in the given ``kanban_state``.
