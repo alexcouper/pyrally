@@ -38,6 +38,7 @@ class RallyAccessor(object):
         auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
         opener = urllib2.build_opener(auth_handler)
         urllib2.install_opener(opener)
+        self.cache_timeout = CACHE_TIMEOUT
 
     def make_url_safe(self, url):
         return url.replace(' ', '%20')\
@@ -53,7 +54,7 @@ class RallyAccessor(object):
             full_url = url
         print full_url
         data, access_time = MEM_CACHE.get(full_url, (None, 0))
-        if not data or time.time() - access_time > CACHE_TIMEOUT:
+        if not data or time.time() - access_time > self.cache_timeout:
             response = urllib2.urlopen(full_url).read()
             data = simplejson.loads(response)
             MEM_CACHE[full_url] = (data, time.time())
