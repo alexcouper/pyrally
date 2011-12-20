@@ -38,6 +38,9 @@ print defect.FormattedID
 print defect.tasks
 print defect.Blocked
 
+all_entities = rac.get_all_entities()
+print len(all_entities)
+
 # print dict_obj
 # for story in dict_obj['stories']:
 #     print story.__dict__
