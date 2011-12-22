@@ -1,0 +1,16 @@
+pyrally
+=======
+
+Access the Rally API using python.
+
+Currently it provides READ ONLY access to some of the API provided by
+Rally.
+
+At the top level, the client can be used to:
+    * get all the entities in Rally
+    * get all stories/defects in a kanban state in rally
+    * get a story/task by name
+
+Or, by importing the model objects, it is possible to:
+    * get all stories/tasks/defects/iterations/user in Rally
+    * get a story/task/defect/iteration/user by name
