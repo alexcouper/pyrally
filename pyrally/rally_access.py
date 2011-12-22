@@ -2,8 +2,6 @@ import urllib2
 import simplejson
 import time
 
-from pyrally import settings
-
 
 class UnexpectedResponse(Exception):
     pass
@@ -14,6 +12,7 @@ MEM_CACHE = {}
 """Dictionary of request: (response, time_of_stored_request)"""
 CACHE_TIMEOUT = 120
 """Seconds to store an item in memory for, before it needs refreshing"""
+
 
 def get_accessor(username=None, password=None):
     global ACCESSOR

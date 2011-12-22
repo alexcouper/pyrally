@@ -4,19 +4,17 @@ https://rally1.rallydev.com/slm/doc/webservice/
 """
 from pyrally.rally_access import get_accessor
 
-API_OBJECT_TYPES = {}
+from pyrally.register import register_type, API_OBJECT_TYPES
 
 
 class ReferenceNotFoundException(Exception):
     pass
 
 
-def register_type(class_type):
-    global API_OBJECT_TYPES
-    API_OBJECT_TYPES[class_type.rally_name] = class_type
-
-
 def get_query_clauses(clauses, joiner=' and '):
+    """
+    Return clauses used forq
+    """
     if len(clauses) == 1:
         return '{0}'.format(clauses[0])
     else:
@@ -59,7 +57,7 @@ class BaseRallyModel(object):
     def __init__(self, data_dict):
         self._full_sub_objects = {}
         self.rally_data = {}
-        self.rally_data = data_dict#[self.rally_name]
+        self.rally_data = data_dict
 
     def __getattribute__(self, attr_name):
         """Patch the default __getattribute__ call to be better for us.
@@ -122,6 +120,19 @@ class BaseRallyModel(object):
 
     @classmethod
     def create_from_ref(cls, reference):
+        """Create an instance of ``cls`` by getting data for ``reference``.
+
+        :param reference:
+            The full url reference to make an api call with.
+
+        :returns:
+            A populated :py:exc:`~pyrally.models.BaseRallyModel` inheriting
+            instance which matches the reference.
+
+        :raises:
+            A :py:class:`~pyrally.models.ReferenceNotFoundException` if we get
+            any error back from the API.
+        """
         response = get_accessor().make_api_call(reference, True)
         errors = response.get('OperationResult', {'Errors': []}).get('Errors')
         if errors:
@@ -137,6 +148,17 @@ class BaseRallyModel(object):
 
     @classmethod
     def get_all(cls, clauses=None):
+        """
+        Return all the items for the rally class.
+
+        :param clauses:
+            Optional parameter of a list of clauses to be ``and`` ed together
+            by :py:func:`~pyrally.models.get_query_clauses`.
+
+        :returns:
+            A list of :py:class:`~pyrally.models.BaseRallyModel` inheriting
+            objects.
+        """
         if clauses:
             query_string = get_query_clauses(clauses)
         else:
@@ -158,7 +180,8 @@ class BaseRallyModel(object):
             for the object.
 
         :returns:
-            A list of results.
+            A list of full object results (ie fetch=true is set in the API
+            get)
         """
         def get_results_page(query_string, start_index=1):
             query_arg = ""
@@ -204,13 +227,52 @@ class BaseRallyModel(object):
         return converted_results
 
     @classmethod
-    def get_by_name(cls, story_name):
-        clauses = ['FormattedID = "{0}"'.format(story_name)]
+    def get_by_name(cls, name):
+        """Return all the objects by the given name.
+
+        :param name:
+            The name to search for. The get is performed by setting
+            FormattedID=``name`` in the url.
+
+        :returns:
+            A single :py:class:`~pyrally.models.BaseRallyModel` inheriting
+            object with the FormattedID = name.
+        """
+        clauses = ['FormattedID = "{0}"'.format(name)]
         return cls.get_all(clauses)[0]
 
     @property
     def title(self):
+        """Property for getting the title of an object.
+
+        :returns:
+            The attribute found in the key ``_refObjectName`` in the data
+            back from the API
+        """
         return self._refObjectName
+
+
+class Artifact(BaseRallyModel):
+    rally_name = 'Artifact'
+
+    @classmethod
+    def get_by_name(cls, name):
+        """Get an artifact by name.
+
+        :param name:
+            The name of the artifact (eg US323 or de12)
+
+        :returns:
+            A BaseRallyModel inherited object containing the details of the
+            relevant matching object, or ``None`` if one couldn't be found.
+        """
+        clauses = ['FormattedID = "{0}"'.format(name)]
+        all_artifacts = cls.get_all(clauses)
+        # Strangely, this returns for us444: de444, ta444 and us444.
+        for artifact in all_artifacts:
+            if artifact.FormattedID.lower() == name.lower():
+                return artifact
+        return None
 
 
 class Task(BaseRallyModel):
@@ -249,26 +311,4 @@ class User(BaseRallyModel):
 class Iteration(BaseRallyModel):
     rally_name = 'Iteration'
 
-
-class Artifact(BaseRallyModel):
-    rally_name = 'Artifact'
-
-    @classmethod
-    def get_by_name(cls, name):
-        """Get an artifact by name.
-
-        :param name:
-            The name of the artifact (eg US323 or de12)
-
-        :returns:
-            A BaseRallyModel inherited object containing the details of the
-            relevant matching object, or ``None`` if one couldn't be found.
-        """
-        clauses = ['FormattedID = "{0}"'.format(name)]
-        all_artifacts = cls.get_all(clauses)
-        # Strangely, this returns for us444: de444, ta444 and us444.
-        for artifact in all_artifacts:
-            if artifact.FormattedID.lower() == name.lower():
-                return artifact
-        return None
 
