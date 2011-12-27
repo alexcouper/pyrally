@@ -1,0 +1,178 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyrally.tests.functional.test_models &mdash; pyrally 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="pyrally 0.1.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">pyrally 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyrally.tests.functional.test_models</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span>
+<span class="kn">from</span> <span class="nn">nose.tools</span> <span class="kn">import</span> <span class="n">assert_equal</span><span class="p">,</span> <span class="n">assert_raises</span>
+
+<span class="kn">from</span> <span class="nn">pyrally.models</span> <span class="kn">import</span> <span class="n">BaseRallyModel</span>
+
+
+<div class="viewcode-block" id="test_get_attribute_behaviour_getting_attributes_from_dictionary"><a class="viewcode-back" href="../../../../tests.html#pyrally.tests.functional.test_models.test_get_attribute_behaviour_getting_attributes_from_dictionary">[docs]</a><span class="k">def</span> <span class="nf">test_get_attribute_behaviour_getting_attributes_from_dictionary</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test ``__get_attribute__`` behaviour works as expected.</span>
+
+<span class="sd">    Test that :py:class:`~pyrally.models.BaseRallyModel` classes look not</span>
+<span class="sd">    only at attributes held within __dict__, but also to keys in the dictionary</span>
+<span class="sd">    passed when instantiating.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;_mock_test_data_key&#39;</span><span class="p">:</span> <span class="s">&#39;test&#39;</span><span class="p">}</span>
+    <span class="n">brm</span> <span class="o">=</span> <span class="n">BaseRallyModel</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+    <span class="c"># check we can get an attribute as usual</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">brm</span><span class="o">.</span><span class="n">rally_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+    <span class="c"># check we can get an attribute from the dictionary of test data</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">brm</span><span class="o">.</span><span class="n">_mock_test_data_key</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span>
+    <span class="c"># check that we still get AttributeErrors when the attribute can&#39;t be found</span>
+    <span class="n">assert_raises</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">,</span> <span class="n">brm</span><span class="p">,</span> <span class="s">&#39;some_other_attr&#39;</span><span class="p">)</span>
+
+</div>
+<span class="nd">@patch</span><span class="p">(</span><span class="s">&#39;pyrally.models.API_OBJECT_TYPES&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="test_get_attribute_behaviour_dynamically_loading_objects"><a class="viewcode-back" href="../../../../tests.html#pyrally.tests.functional.test_models.test_get_attribute_behaviour_dynamically_loading_objects">[docs]</a><span class="k">def</span> <span class="nf">test_get_attribute_behaviour_dynamically_loading_objects</span><span class="p">(</span><span class="n">API_OBJECT_TYPES</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test ``__get_attribute__`` loads objects dynamically if required.</span>
+
+<span class="sd">    Test that :py:class:`~pyrally.models.BaseRallyModel` classes dynamically</span>
+<span class="sd">    load content using Rally API calls when required.</span>
+
+<span class="sd">    It does this when a dictionary is found at the attribute location in the</span>
+<span class="sd">    dictionary given at instatiation and there is a ``_ref`` key within that</span>
+<span class="sd">    dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mock_baserally_obj</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_create_from_ref</span> <span class="o">=</span> <span class="n">mock_baserally_obj</span><span class="o">.</span><span class="n">create_from_ref</span>
+
+    <span class="n">API_OBJECT_TYPES</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_baserally_obj</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;mock_test_data_key&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;_ref&#39;</span><span class="p">:</span> <span class="s">&#39;some_reference&#39;</span><span class="p">,</span>
+                                         <span class="s">&#39;_type&#39;</span><span class="p">:</span> <span class="s">&#39;api_type&#39;</span><span class="p">}}</span>
+
+    <span class="n">brm</span> <span class="o">=</span> <span class="n">BaseRallyModel</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+    <span class="c"># Access an attribute of a remote object.</span>
+    <span class="n">remote_fred_attr</span> <span class="o">=</span> <span class="n">brm</span><span class="o">.</span><span class="n">mock_test_data_key</span><span class="o">.</span><span class="n">fred</span>
+
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">remote_fred_attr</span><span class="p">,</span> <span class="n">mock_create_from_ref</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">fred</span><span class="p">)</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">API_OBJECT_TYPES</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="p">(</span><span class="s">&#39;api_type&#39;</span><span class="p">,</span> <span class="n">BaseRallyModel</span><span class="p">))</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">mock_create_from_ref</span><span class="o">.</span><span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="s">&#39;some_reference&#39;</span><span class="p">,</span> <span class="p">))</span>
+
+</div>
+<span class="nd">@patch</span><span class="p">(</span><span class="s">&#39;pyrally.models.API_OBJECT_TYPES&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="test_get_attribute_behaviour_dynamically_loading_object_lists"><a class="viewcode-back" href="../../../../tests.html#pyrally.tests.functional.test_models.test_get_attribute_behaviour_dynamically_loading_object_lists">[docs]</a><span class="k">def</span> <span class="nf">test_get_attribute_behaviour_dynamically_loading_object_lists</span><span class="p">(</span>
+                                                            <span class="n">API_OBJECT_TYPES</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test ``__get_attribute__`` loads object lists dynamically if required.</span>
+
+<span class="sd">    Test that :py:class:`~pyrally.models.BaseRallyModel` classes dynamically</span>
+<span class="sd">    load sub-content using Rally API calls when required.</span>
+
+<span class="sd">    It does this when an attribute is given that is defined in</span>
+<span class="sd">    ``sub_objects_dynamic_loader``. In such circumstances the mapped key</span>
+<span class="sd">    should be used and all sub items in that key fetched from the server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mock_baserally_obj</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_create_from_ref</span> <span class="o">=</span> <span class="n">mock_baserally_obj</span><span class="o">.</span><span class="n">create_from_ref</span>
+    <span class="n">API_OBJECT_TYPES</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_baserally_obj</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;dynamic_sub_object&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&#39;_ref&#39;</span><span class="p">:</span> <span class="s">&#39;some_reference_1&#39;</span><span class="p">,</span>
+                                         <span class="s">&#39;_type&#39;</span><span class="p">:</span> <span class="s">&#39;api_type&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s">&#39;_ref&#39;</span><span class="p">:</span> <span class="s">&#39;some_reference_2&#39;</span><span class="p">,</span>
+                                         <span class="s">&#39;_type&#39;</span><span class="p">:</span> <span class="s">&#39;api_type&#39;</span><span class="p">},</span>
+                                         <span class="p">]}</span>
+
+    <span class="n">brm</span> <span class="o">=</span> <span class="n">BaseRallyModel</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+    <span class="n">brm</span><span class="o">.</span><span class="n">sub_objects_dynamic_loader</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;test_property&#39;</span><span class="p">:</span> <span class="s">&#39;dynamic_sub_object&#39;</span><span class="p">}</span>
+
+    <span class="n">dynamic_content</span> <span class="o">=</span> <span class="n">brm</span><span class="o">.</span><span class="n">test_property</span>
+
+    <span class="c"># Check that this is now stored in the object for use later.</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">dynamic_content</span><span class="p">,</span> <span class="n">brm</span><span class="o">.</span><span class="n">_full_sub_objects</span><span class="p">[</span><span class="s">&#39;test_property&#39;</span><span class="p">])</span>
+
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">dynamic_content</span><span class="p">,</span> <span class="p">[</span><span class="n">mock_create_from_ref</span><span class="o">.</span><span class="n">return_value</span><span class="p">,</span>
+                                   <span class="n">mock_create_from_ref</span><span class="o">.</span><span class="n">return_value</span><span class="p">])</span>
+
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">API_OBJECT_TYPES</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">assert_equal</span><span class="p">(</span><span class="n">mock_create_from_ref</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">pyrally 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Alex Couper.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
