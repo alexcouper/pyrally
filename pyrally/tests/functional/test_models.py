@@ -1,7 +1,7 @@
 from mock import patch, Mock
 from nose.tools import assert_equal, assert_raises
 
-from pyrally.models import BaseRallyModel
+from pyrally.models import BaseRallyModel, ReferenceNotFoundException
 
 
 def test_get_attribute_behaviour_getting_attributes_from_dictionary():
@@ -83,3 +83,33 @@ def test_get_attribute_behaviour_dynamically_loading_object_lists(
 
     assert_equal(API_OBJECT_TYPES.get.call_count, 2)
     assert_equal(mock_create_from_ref.call_count, 2)
+
+
+@patch('pyrally.models.API_OBJECT_TYPES')
+def test_get_attribute_dynamically_loading_objects_no_reference(
+                                                             API_OBJECT_TYPES):
+    """Test ``__get_attribute__`` handles ```ReferenceNotFoundException`` s
+
+    Test that :py:class:`~pyrally.models.BaseRallyModel` classes handle the
+    case where :py:class:`~pyrally.models.ReferenceNotFoundException` is raised
+    during the call to ``create_from_ref``.
+
+    None is returned in these circumstances.
+    """
+    mock_baserally_obj = Mock()
+    mock_create_from_ref = mock_baserally_obj.create_from_ref
+    mock_create_from_ref.side_effect = ReferenceNotFoundException('Some Error')
+
+    API_OBJECT_TYPES.get.return_value = mock_baserally_obj
+    test_data = {'mock_test_data_key': {'_ref': 'some_reference',
+                                         '_type': 'api_type'}}
+
+    brm = BaseRallyModel(test_data)
+
+    # Access an attribute of a remote object.
+    remote_attr = brm.mock_test_data_key
+
+    assert_equal(remote_attr, None)
+    assert_equal(API_OBJECT_TYPES.get.call_args[0],
+                 ('api_type', BaseRallyModel))
+    assert_equal(mock_create_from_ref.call_args[0], ('some_reference', ))

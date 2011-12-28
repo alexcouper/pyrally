@@ -2,7 +2,6 @@ from nose.tools import assert_equal
 from pyrally.models import get_query_clauses
 
 
-
 def test_generates_query_strings_correctly():
 
     query_1 = get_query_clauses(['a = 1', 'b = 2', 'c = 3'], ' or ')

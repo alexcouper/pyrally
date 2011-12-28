@@ -173,12 +173,46 @@ could be found.</td>
 <dd><dl class="method">
 <dt id="pyrally.rally_access.RallyAccessor.make_url_safe">
 <tt class="descname">make_url_safe</tt><big>(</big><em>url</em><big>)</big><a class="reference internal" href="_modules/pyrally/rally_access.html#RallyAccessor.make_url_safe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.rally_access.RallyAccessor.make_url_safe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Make the given url safe for use against the Rally API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>url</strong> &#8211; The url we want to make safe.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A new url string with all &#8221; &#8221;, &#8220;(&#8221;, &#8221;)&#8221; and &#8216;&#8221;&#8217; characters replaced
+by html % characters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyrally.rally_access.RallyAccessor.make_api_call">
 <tt class="descname">make_api_call</tt><big>(</big><em>url</em>, <em>full_url=False</em><big>)</big><a class="reference internal" href="_modules/pyrally/rally_access.html#RallyAccessor.make_api_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.rally_access.RallyAccessor.make_api_call" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Make a call against the API at the given url.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>url</strong> &#8211; The url to make the call against. Note that this will be converted
+before being used through
+<a class="reference internal" href="#pyrally.rally_access.RallyAccessor.make_url_safe" title="pyrally.rally_access.RallyAccessor.make_url_safe"><tt class="xref py py-meth docutils literal"><span class="pre">make_url_safe()</span></tt></a>.</li>
+<li><strong>full_url</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, it is assumed that the url contains the stem
+of the API call as opposed to a relative one in the case of
+<tt class="docutils literal"><span class="pre">False</span></tt>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The JSON data as returned by the API converted into python
+dictionary objects. This is done either by looking in the cache,
+or by actually getting it from the server.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -206,7 +240,22 @@ could be found.</td>
 <dl class="function">
 <dt id="pyrally.models.get_query_clauses">
 <tt class="descclassname">pyrally.models.</tt><tt class="descname">get_query_clauses</tt><big>(</big><em>clauses</em>, <em>joiner=' and '</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#get_query_clauses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.get_query_clauses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return clauses used forq</p>
+<dd><p>Return clauses used for querying objects from the API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>clauses</strong> &#8211; A list of clause strings to be joined in the correct fashion using
+<tt class="docutils literal"><span class="pre">joiner</span></tt> and brackets</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param :</th><td class="field-body">joiner:
+This should either be `` and `` or `` or <tt class="docutils literal"><span class="pre">.</span> <span class="pre">All</span> <span class="pre">clauses</span> <span class="pre">in</span> <span class="pre">``clause</span></tt>
+are joined together using this operator.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A single query_clause string containing all of <tt class="docutils literal"><span class="pre">clauses</span></tt>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -287,7 +336,33 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrally.models.BaseRallyModel._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.BaseRallyModel._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -297,8 +372,25 @@ get)</td>
 <dt id="pyrally.models.BaseRallyModel.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#BaseRallyModel.convert_from_query_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.BaseRallyModel.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -313,7 +405,8 @@ object using the <tt class="docutils literal"><span class="pre">_ref</span></tt>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -346,17 +439,26 @@ back from the API</td>
 <dd></dd></dl>
 
 <dl class="classmethod">
-<dt id="pyrally.models.Artifact.get_by_name">
-<em class="property">classmethod </em><tt class="descname">get_by_name</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Artifact.get_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Artifact.get_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an artifact by name.</p>
+<dt id="pyrally.models.Artifact._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.Artifact._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; The name of the artifact (eg US323 or de12)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A BaseRallyModel inherited object containing the details of the
-relevant matching object, or <tt class="docutils literal"><span class="pre">None</span></tt> if one couldn&#8217;t be found.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -366,8 +468,25 @@ relevant matching object, or <tt class="docutils literal"><span class="pre">None
 <dt id="pyrally.models.Artifact.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.Artifact.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -422,7 +541,26 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrally.models.Artifact.get_by_name">
+<em class="property">classmethod </em><tt class="descname">get_by_name</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Artifact.get_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Artifact.get_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the objects by the given name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; The name to search for. The get is performed by setting
+FormattedID=``name`` in the url.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -462,14 +600,68 @@ back from the API</td>
 <dl class="classmethod">
 <dt id="pyrally.models.Task.get_all_for_story">
 <em class="property">classmethod </em><tt class="descname">get_all_for_story</tt><big>(</big><em>story_id</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Task.get_all_for_story"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Task.get_all_for_story" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all the tasks for the given <tt class="docutils literal"><span class="pre">story_id</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>story_id</strong> &#8211; The USXXX or DEXXX parent ID of a task to search for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of <tt class="docutils literal"><span class="pre">Task</span></tt> objects, as returned by get_all</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrally.models.Task._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.Task._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="pyrally.models.Task.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.Task.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -524,7 +716,7 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
 </tr>
 </tbody>
 </table>
@@ -542,7 +734,8 @@ get)</td>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -587,14 +780,68 @@ back from the API</td>
 <dl class="classmethod">
 <dt id="pyrally.models.Story.get_all_in_kanban_state">
 <em class="property">classmethod </em><tt class="descname">get_all_in_kanban_state</tt><big>(</big><em>kanban_state</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Story.get_all_in_kanban_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Story.get_all_in_kanban_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all the stories in the given kanban_state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kanban_state</strong> &#8211; The kanban state to search on.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of <tt class="docutils literal"><span class="pre">Story</span></tt> objects, as returned by get_all</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrally.models.Story._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.Story._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="pyrally.models.Story.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.Story.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -649,7 +896,7 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
 </tr>
 </tbody>
 </table>
@@ -667,7 +914,8 @@ get)</td>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -707,14 +955,68 @@ back from the API</td>
 <dl class="classmethod">
 <dt id="pyrally.models.Defect.get_all_in_kanban_state">
 <em class="property">classmethod </em><tt class="descname">get_all_in_kanban_state</tt><big>(</big><em>kanban_state</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Defect.get_all_in_kanban_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Defect.get_all_in_kanban_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all the defects in the given kanban_state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kanban_state</strong> &#8211; The kanban state to search on.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of <tt class="docutils literal"><span class="pre">Defect</span></tt> objects, as returned by get_all</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrally.models.Defect._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.Defect._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="pyrally.models.Defect.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.Defect.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -769,7 +1071,7 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
 </tr>
 </tbody>
 </table>
@@ -787,7 +1089,8 @@ get)</td>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -820,11 +1123,54 @@ back from the API</td>
 <dd></dd></dl>
 
 <dl class="classmethod">
+<dt id="pyrally.models.User._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.User._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="pyrally.models.User.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.User.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -879,7 +1225,7 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
 </tr>
 </tbody>
 </table>
@@ -897,7 +1243,8 @@ get)</td>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>
@@ -930,11 +1277,54 @@ back from the API</td>
 <em class="property">class </em><tt class="descclassname">pyrally.models.</tt><tt class="descname">Iteration</tt><big>(</big><em>data_dict</em><big>)</big><a class="reference internal" href="_modules/pyrally/models.html#Iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyrally.models.Iteration" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">pyrally.models.BaseRallyModel</span></tt></a></p>
 <dl class="classmethod">
+<dt id="pyrally.models.Iteration._get_results_page">
+<em class="property">classmethod </em><tt class="descname">_get_results_page</tt><big>(</big><em>query_string</em>, <em>start_index=1</em><big>)</big><a class="headerlink" href="#pyrally.models.Iteration._get_results_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a page of results for the query given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query_string</strong> &#8211; The string to get results for. If <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt>, no query
+is passed in and all objects for the class will be returned.</li>
+<li><strong>start_index</strong> &#8211; The 1-based offset to fetch from. A pagesize of 100 is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The QueryResult entity as returned by the API, containing at most
+100 results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Exception if [&#8216;QueryResult&#8217;][&#8216;Errors&#8217;] contains anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="pyrally.models.Iteration.convert_from_query_result">
 <em class="property">classmethod </em><tt class="descname">convert_from_query_result</tt><big>(</big><em>results</em>, <em>full_objects=False</em><big>)</big><a class="headerlink" href="#pyrally.models.Iteration.convert_from_query_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set of Rally results into python objects.</p>
-<p>This involves asking for more information from Rally regarding the
-object using the <tt class="docutils literal"><span class="pre">_ref</span></tt> key in the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> &#8211; An iterable of results from the Rally API.</li>
+<li><strong>full_objects</strong> &#8211; Boolean. If <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">results</span></tt> is assumed to contain full
+objects as returned by the API when <tt class="docutils literal"><span class="pre">fetch=True</span></tt> is included in
+the URL. If <tt class="docutils literal"><span class="pre">False</span></tt>, the full object data is fetched using
+<a class="reference internal" href="#pyrally.models.BaseRallyModel.create_from_ref" title="pyrally.models.BaseRallyModel.create_from_ref"><tt class="xref py py-meth docutils literal"><span class="pre">create_from_ref()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of full <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a>
+inheriting python objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="classmethod">
@@ -989,7 +1379,7 @@ retrieved and return just the results.</p>
 for the object.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of full object results (ie fetch=true is set in the API
-get)</td>
+GET)</td>
 </tr>
 </tbody>
 </table>
@@ -1007,7 +1397,8 @@ get)</td>
 FormattedID=``name`` in the url.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A single <a class="reference internal" href="#pyrally.models.BaseRallyModel" title="pyrally.models.BaseRallyModel"><tt class="xref py py-class docutils literal"><span class="pre">BaseRallyModel</span></tt></a> inheriting
-object with the FormattedID = name.</td>
+object with the FormattedID = name. Or <tt class="docutils literal"><span class="pre">None</span></tt> if one cannot
+be found.</td>
 </tr>
 </tbody>
 </table>

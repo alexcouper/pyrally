@@ -17,6 +17,7 @@ models.py
 .. automodule:: pyrally.models
     :show-inheritance:
     :inherited-members:
+    :private-members:
 
 
 register.py
