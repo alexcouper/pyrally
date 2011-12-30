@@ -15,7 +15,7 @@ setup(
     url='https://github.com/alexcouper/pyrally',
     packages=['pyrally'],
     install_requires=['simplejson'],
-    zip_safe=False,
+    zip_safe=True,
     scripts=[
     ],
     package_data={
