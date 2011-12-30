@@ -9,7 +9,7 @@ setup(
     name='pyrally',
     description='Rally API Client',
     long_description=long_description,
-    version='0.2.1',
+    version='0.2.2',
     author='Alex Couper',
     author_email='amcouper@gmail.com',
     url='https://github.com/alexcouper/pyrally',
@@ -21,7 +21,7 @@ setup(
         '': ['*.txt', '*.rst'],
     },
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
