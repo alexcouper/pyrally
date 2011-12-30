@@ -1,2 +1,8 @@
-mock
 simplejson
+coverage
+nose
+nosexcover
+mock
+sphinx
+pep8
+
