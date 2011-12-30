@@ -1,0 +1,11 @@
+
+## 0.2.1
+
+    * Update attribute on an object on Rally.
+    * Delete objects from Rally.
+    * Documentation vastly improved.
+
+## 0.2.0
+
+    * Read only access to the API added.
+    * Story, Defect, Task, Artifact, User and Iteration classes created.
