@@ -3,12 +3,27 @@ from pyrally.client import RallyAPIClient
 from pyrally import settings
 from pyrally.models import Story, Artifact
 
-rac = RallyAPIClient(settings.RALLY_USERNAME, settings.RALLY_PASSWORD)
+rac = RallyAPIClient(settings.RALLY_USERNAME,
+                     settings.RALLY_PASSWORD,
+                     settings.BASE_URL)
+
+
+story = rac.get_story_by_name('us12')
+if story:
+    print story.title
+    story.update(Name='Why me?')
+    story.update_rally()
+
+for i in xrange(0, 21):
+    story = Story.get_by_name('us' + str(i))
+    if story:
+        story.delete()
+
 
 #all_stories = Story.get_all()
 #print len(all_stories)
-print Artifact.get_all_in_kanban_state('In Development')
-print Story.get_all_in_kanban_state('In Development')
+#print Artifact.get_all_in_kanban_state('In Development')
+#print Story.get_all_in_kanban_state('In Development')
 # all_stories = Story.get_all()
 # print len(all_stories)
 # story = rac.get_story_by_name('us524')

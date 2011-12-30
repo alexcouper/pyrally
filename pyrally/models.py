@@ -67,9 +67,8 @@ class BaseRallyModel(object):
     key ``key_name``.
     """
 
-    def __init__(self, data_dict):
+    def __init__(self, data_dict={}):
         self._full_sub_objects = {}
-        self.rally_data = {}
         self.rally_data = data_dict
 
     def __getattribute__(self, attr_name):
@@ -291,6 +290,11 @@ class BaseRallyModel(object):
                 return obj
         return None
 
+    def update(self, **kwargs):
+        """Update all the attributes in ``rally_data`` specified in kwargs."""
+        for attrname, value in kwargs.items():
+            self.rally_data[attrname] = value
+
     @property
     def title(self):
         """Property for getting the title of an object.
@@ -300,6 +304,58 @@ class BaseRallyModel(object):
             back from the API
         """
         return self._refObjectName
+
+    @property
+    def ref(self):
+        return self.rally_data.get('_ref')
+
+    def update_rally(self, refresh=True):
+        """Update or create ``self`` on Rally.
+
+        If there is no sign of a _ref internally, a create is sent,
+        otherwise an update is sent.
+
+        :param refresh:
+            Used on creates. If ``True`` a fetch is performed after the object
+            is created in Rally and ``self`` is populated with the new data.
+
+        :returns:
+            The response from the server.
+        """
+        if self.ref:
+            # Do update
+            data = {self.rally_name: self.rally_data}
+            response = get_accessor().make_api_call(self.ref,
+                                                    True,
+                                                    method='POST',
+                                                    data=data)
+
+        else:
+            data = {self.rally_name: self.rally_data}
+            url = "{0}/create.js".format(self.rally_name.lower())
+            response = get_accessor().make_api_call(url,
+                                                    method='POST',
+                                                    data=data)
+            if response['CreateResult']['Errors']:
+                raise Exception('Errors in query: {0}'.format(
+                                 response['CreateResult']['Errors']))
+            reference = response['CreateResult']['Object']['_ref']
+            if refresh:
+                new_data = get_accessor().make_api_call(reference, True)
+                self.rally_data = new_data[self.rally_name]
+        return response
+
+    def delete(self):
+        """Delete this object from Rally"""
+        if not self.ref:
+            raise Exception("Cannot delete item that is not synced with Rally."
+                            " If you've just created this item try running"
+                            "update_rally().")
+        response = get_accessor().make_api_call(self.ref, True,
+                                                method='DELETE')
+        if response['OperationResult']['Errors']:
+            raise Exception('Errors in delete: {0}'.format(
+                                 response['OperationResult']['Errors']))
 
 
 class Artifact(BaseRallyModel):

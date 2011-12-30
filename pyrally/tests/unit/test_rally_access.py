@@ -30,8 +30,9 @@ def test_get_accessor_creates_accessor_if_not_already_created(RallyAccessor):
     and returns a :py:class:`~pyrally.rally_access.RallyAccessor` object if it
     has not already been created.
     """
-    assert_equal(get_accessor('uname', 'pword'), RallyAccessor.return_value)
-    assert_equal(RallyAccessor.call_args[0], ('uname', 'pword'))
+    assert_equal(get_accessor('uname', 'pword', 'base_url'),
+                 RallyAccessor.return_value)
+    assert_equal(RallyAccessor.call_args[0], ('uname', 'pword', 'base_url'))
 
 
 @patch('pyrally.rally_access.ACCESSOR', None)
@@ -51,7 +52,7 @@ def test_get_accessor_raises_exception_if_not_created_and_no_uname_password(
 
 def test_make_url_safe():
     """Test that :py:meth:`.RallyAccessor.make_url_safe` works correctly."""
-    my_accessor = RallyAccessor('uname', 'pword')
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
     for url, expected_outcome in [
                                     (' ', "%20"),
                                     ('(', "%28"),
@@ -73,7 +74,7 @@ def test_make_api_call_full_url_cached(MEM_CACHE, urllib2):
         * uses the url given without amendments.
         * makes the url given safe.
     """
-    my_accessor = RallyAccessor('uname', 'pword')
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
     my_accessor.make_url_safe = Mock()
     my_accessor.make_url_safe.return_value = 'safe-url'
     MEM_CACHE.get.return_value = ('Data', time.time())
@@ -99,7 +100,7 @@ def test_make_api_call_partial_url_not_cached(simplejson, urllib2):
     """
     MEM_CACHE.clear()
 
-    my_accessor = RallyAccessor('uname', 'pword')
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
     my_accessor.api_url = 'http://dummy_url/'
 
     my_accessor.make_url_safe = Mock()
@@ -111,5 +112,5 @@ def test_make_api_call_partial_url_not_cached(simplejson, urllib2):
 
     assert_equal(response, 'python_dict')
     assert_equal(my_accessor.make_url_safe.call_args[0], ('some-url',))
-    assert_equal(urllib2.urlopen.call_args[0], ('http://dummy_url/safe-url',))
+    assert_equal(urllib2.urlopen.call_args[0], (urllib2.Request.return_value,))
     assert_equal(simplejson.loads.call_args[0], ('RAW_DATA',))

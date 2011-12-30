@@ -4,8 +4,8 @@ from pyrally.rally_access import get_accessor
 
 class RallyAPIClient(object):
 
-    def __init__(self, username, password):
-        self.rally_access = get_accessor(username, password)
+    def __init__(self, username, password, base_url):
+        self.rally_access = get_accessor(username, password, base_url)
 
     def get_all_entities(self):
         """

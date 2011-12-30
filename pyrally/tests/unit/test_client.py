@@ -3,7 +3,7 @@ from nose.tools import assert_equal
 
 from pyrally.client import RallyAPIClient
 
-TEST_RA_CLIENT = RallyAPIClient('username', 'password')
+TEST_RA_CLIENT = RallyAPIClient('username', 'password', 'base_url')
 
 
 @patch('pyrally.client.get_accessor')
@@ -13,9 +13,10 @@ def test_initialisation(get_accessor):
     Tests that :py:func:`~pyrally.rally_access.get_accessor` is called with
     the appropriate arguments.
     """
-    RallyAPIClient('mock_username', 'mock_password')
+    RallyAPIClient('mock_username', 'mock_password', 'mock_url')
 
-    assert_equal(get_accessor.call_args[0], ('mock_username', 'mock_password'))
+    assert_equal(get_accessor.call_args[0],
+                 ('mock_username', 'mock_password', 'mock_url'))
 
 
 @patch('pyrally.client.Artifact')
