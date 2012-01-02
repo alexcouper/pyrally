@@ -60,9 +60,9 @@ def test_get_story_by_name(Story):
     returns the value returned by method
     :py:meth:`~pyrally.models.Story.get_by_name`
     """
-    result = TEST_RA_CLIENT.get_story_by_name('mock_name')
-    assert_equal(Story.get_by_name.call_args[0][0], 'mock_name')
-    assert_equal(result, Story.get_by_name.return_value)
+    result = TEST_RA_CLIENT.get_story_by_formatted_id('mock_name')
+    assert_equal(Story.get_by_formatted_id.call_args[0][0], 'mock_name')
+    assert_equal(result, Story.get_by_formatted_id.return_value)
 
 
 @patch('pyrally.client.Defect')
@@ -73,9 +73,9 @@ def test_get_defect_by_name(Defect):
     returns the value returned by method
     :py:meth:`~pyrally.models.Defect.get_by_name`
     """
-    result = TEST_RA_CLIENT.get_defect_by_name('mock_name')
-    assert_equal(Defect.get_by_name.call_args[0][0], 'mock_name')
-    assert_equal(result, Defect.get_by_name.return_value)
+    result = TEST_RA_CLIENT.get_defect_by_formatted_id('mock_name')
+    assert_equal(Defect.get_by_formatted_id.call_args[0][0], 'mock_name')
+    assert_equal(result, Defect.get_by_formatted_id.return_value)
 
 
 @patch('pyrally.client.Artifact')
@@ -86,7 +86,7 @@ def test_get_entity_by_name(Artifact):
     returns the value returned by method
     :py:meth:`~pyrally.models.Artifact.get_by_name`
     """
-    result = TEST_RA_CLIENT.get_entity_by_name('mock_name')
-    assert_equal(Artifact.get_by_name.call_args[0][0], 'mock_name')
-    assert_equal(result, Artifact.get_by_name.return_value)
+    result = TEST_RA_CLIENT.get_entity_by_formatted_id('mock_name')
+    assert_equal(Artifact.get_by_formatted_id.call_args[0][0], 'mock_name')
+    assert_equal(result, Artifact.get_by_formatted_id.return_value)
 

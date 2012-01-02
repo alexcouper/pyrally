@@ -1,3 +1,5 @@
+import time
+
 from nose.tools import assert_true, assert_equal
 
 from pyrally.client import RallyAPIClient
@@ -14,38 +16,37 @@ def test_story_flow():
                         'point to a community version (ie '
                         'community.rallydev.com).')
     rally_access.ACCESSOR = None
-    print 'in test'
     rally_access.MEM_CACHE = {}
     RallyAPIClient(settings.RALLY_USERNAME,
                    settings.RALLY_PASSWORD,
                    settings.BASE_URL)
 
+    story_name = 'Dummy Story Auto Created: {0}'.format(time.time())
     # Create a story
     s = Story({'DefectStatus': "NONE",
                 'ScheduleState': "Defined",
                 'TaskStatus': 'NONE',
                 'TestCaseStatus': 'NONE',
-                'Name': 'Dummy Story Auto Created',
+                'Name': story_name,
                 })
     s.update_rally()
     # Check it has been created
-    print s.title, s.Name, s.FormattedID
     assert_true('US' in s.FormattedID)
-    assert_equal(s.title, 'Dummy Story Auto Created')
+    assert_equal(s.title, story_name)
     assert_true(s.ref)
     # Edit the story
-    s.update(Name="Changed Story Name")
+    new_name = "Changed Story Name: {0}".format(time.time())
+    s.update(Name=new_name)
     s.update_rally()
     # Check that the edit has taken place
     # Delete the cache so we can be sure we're getting it from Rally.
     rally_access.MEM_CACHE = {}
-    s2 = Story.get_by_name(s.FormattedID)
-    assert_equal(s2.Name, 'Changed Story Name')
+    s2 = Story.get_by_formatted_id(s.FormattedID)
+    assert_equal(s2.Name, new_name)
     # Delete the story
-    print s2.FormattedID
     s2.delete()
     # Delete the cache so we can be sure we're getting it from Rally.
     rally_access.MEM_CACHE = {}
     # Check the story no longer exists.
-    s3 = Story.get_by_name(s.FormattedID)
+    s3 = Story.get_by_formatted_id(s.FormattedID)
     assert_equal(s3, None)

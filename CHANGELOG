@@ -1,4 +1,8 @@
 
+    * Add explicit handling of "Project", "Workspace", "Release" and "TestCase"
+      API types.
+    * Change all get_by_name to be get_by_formatted_id
+
 ## 0.2.2
 
     * Update attribute on an object on Rally.

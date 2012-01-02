@@ -270,23 +270,23 @@ class BaseRallyModel(object):
         return converted_results
 
     @classmethod
-    def get_by_name(cls, name):
-        """Return all the objects by the given name.
+    def get_by_formatted_id(cls, formatted_id):
+        """Return all the objects by the given formatted_id.
 
         :param name:
             The name to search for. The get is performed by setting
-            FormattedID=``name`` in the url.
+            FormattedID=``formatted_id`` in the url.
 
         :returns:
             A single :py:class:`~pyrally.models.BaseRallyModel` inheriting
-            object with the FormattedID = name. Or ``None`` if one cannot
-            be found.
+            object with the FormattedID = formatted_id. Or ``None`` if one
+            cannot be found.
         """
-        clauses = ['FormattedID = "{0}"'.format(name)]
+        clauses = ['FormattedID = "{0}"'.format(formatted_id)]
         all_objects = cls.get_all(clauses)
         # Strangely, this returns for us444: de444, ta444 and us444.
         for obj in all_objects:
-            if obj.FormattedID.lower() == name.lower():
+            if obj.FormattedID.lower() == formatted_id.lower():
                 return obj
         return None
 
@@ -380,7 +380,7 @@ class Task(BaseRallyModel):
         return cls.get_all(clauses)
 
 
-class Story(BaseRallyModel):
+class HierarchicalRequirement(BaseRallyModel):
     rally_name = 'HierarchicalRequirement'
     sub_objects_dynamic_loader = {'tasks': 'Tasks', 'children': 'Children'}
 
@@ -424,3 +424,22 @@ class User(BaseRallyModel):
 
 class Iteration(BaseRallyModel):
     rally_name = 'Iteration'
+
+
+class Project(BaseRallyModel):
+    rally_name = 'Project'
+
+
+class Workspace(BaseRallyModel):
+    rally_name = 'Workspace'
+
+
+class Release(BaseRallyModel):
+    rally_name = 'Release'
+
+
+class TestCase(BaseRallyModel):
+    rally_name = 'TestCase'
+
+# Aliases
+Story = HierarchicalRequirement

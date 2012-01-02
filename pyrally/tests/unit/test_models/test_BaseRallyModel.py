@@ -231,9 +231,9 @@ def test_convert_from_query_result_with_only_ref_objects(API_OBJECT_TYPES):
                  ('item_type', BaseRallyModel))
 
 
-def test_get_by_name():
+def test_get_by_formatted_id():
     """
-    Test :py:meth:`~.BaseRallyModel.get_by_name` works as expected
+    Test :py:meth:`~.BaseRallyModel.get_by_formatted_id` works as expected
 
     Test that:
         * The correct clause is created and passed to ``get_all``.
@@ -249,16 +249,16 @@ def test_get_by_name():
     DummyClass.get_all = Mock()
     DummyClass.get_all.return_value = [mock_result_1, mock_result_2]
 
-    result = DummyClass.get_by_name('Some_ID')
+    result = DummyClass.get_by_formatted_id('Some_ID')
 
     assert_equal(result, mock_result_2)
     assert_equal(DummyClass.get_all.call_args[0],
                  (['FormattedID = "Some_ID"'],))
 
 
-def test_get_by_name_no_match():
+def test_get_by_formatted_id_no_match():
     """
-    Test :py:meth:`~.BaseRallyModel.get_by_name` returns None on no match.
+    Test :py:meth:`~.BaseRallyModel.get_by_formatted_id` with no match.
 
     Test that:
         * The correct clause is created and passed to ``get_all``.
@@ -273,7 +273,7 @@ def test_get_by_name_no_match():
     DummyClass.get_all = Mock()
     DummyClass.get_all.return_value = []
 
-    result = DummyClass.get_by_name('Some_ID')
+    result = DummyClass.get_by_formatted_id('Some_ID')
 
     assert_equal(result, None)
     assert_equal(DummyClass.get_all.call_args[0],
