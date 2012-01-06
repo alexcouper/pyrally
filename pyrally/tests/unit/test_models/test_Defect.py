@@ -10,9 +10,9 @@ def get_inherited_class_object():
     return MockDefectModel
 
 
-def test_get_all_in_kanban_state():
+def test_get_all_in_kanban_states():
     """
-    Test :py:meth:`~.Defect.get_all_in_kanban_state`.
+    Test :py:meth:`~.Defect.get_all_in_kanban_states`.
 
     Test that:
         * Uses the correct clause
@@ -20,7 +20,7 @@ def test_get_all_in_kanban_state():
     """
     MockDefect = get_inherited_class_object()
     MockDefect.get_all = Mock()
-    response = MockDefect.get_all_in_kanban_state('Kanban State Name')
+    response = MockDefect.get_all_in_kanban_states(['Kanban State Name'])
 
     assert_equal(response, MockDefect.get_all.return_value)
     assert_equal(MockDefect.get_all.call_args[0],

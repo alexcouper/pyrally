@@ -16,19 +16,19 @@ class RallyAPIClient(object):
         """
         return Artifact.get_all()
 
-    def get_all_in_kanban_state(self, kanban_state):
+    def get_all_in_kanban_states(self, kanban_states):
         """
         Get all stories and defects in the given ``kanban_state``.
 
         :param kanban_state:
-            The kanban state to search for.
+            A list of kanban states to search on.
 
         :returns:
             A dictionary containing keys for ``stories`` and ``defects``, and
             values of lists of associated ``Story`` and ``Defect`` objects.
         """
-        stories = Story.get_all_in_kanban_state(kanban_state)
-        defects = Defect.get_all_in_kanban_state(kanban_state)
+        stories = Story.get_all_in_kanban_states(kanban_states)
+        defects = Defect.get_all_in_kanban_states(kanban_states)
         return {'stories': stories, 'defects': defects}
 
     def get_story_by_formatted_id(self, story_id):

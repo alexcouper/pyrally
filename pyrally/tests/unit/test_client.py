@@ -33,23 +33,23 @@ def test_get_all_entities(Artifact):
 
 @patch('pyrally.client.Defect')
 @patch('pyrally.client.Story')
-def test_get_all_in_kanban_state_gets_stories_and_defects(Story, Defect):
-    """Test that ``get_all_in_kanban_state`` calls the expected methods.
+def test_get_all_in_kanban_states_gets_stories_and_defects(Story, Defect):
+    """Test that ``get_all_in_kanban_states`` calls the expected methods.
 
-    Tests :py:meth:`~pyrally.client.RallyAPIClient.get_all_in_kanban_state`.
+    Tests :py:meth:`~pyrally.client.RallyAPIClient.get_all_in_kanban_states`.
 
     Tests that:
-        * calls Story.get_all_in_kanban_state
-        * calls Defect.get_all_in_kanban_state
+        * calls Story.get_all_in_kanban_states
+        * calls Defect.get_all_in_kanban_states
         * returns a dictionary with all kanban data.
     """
-    result = TEST_RA_CLIENT.get_all_in_kanban_state('state_name')
+    result = TEST_RA_CLIENT.get_all_in_kanban_states('state_name')
 
-    assert_equal(Story.get_all_in_kanban_state.call_count, 1)
-    assert_equal(Defect.get_all_in_kanban_state.call_count, 1)
+    assert_equal(Story.get_all_in_kanban_states.call_count, 1)
+    assert_equal(Defect.get_all_in_kanban_states.call_count, 1)
     assert_equal(result,
-                 {'stories': Story.get_all_in_kanban_state.return_value,
-                  'defects': Defect.get_all_in_kanban_state.return_value})
+                 {'stories': Story.get_all_in_kanban_states.return_value,
+                  'defects': Defect.get_all_in_kanban_states.return_value})
 
 
 @patch('pyrally.client.Story')
