@@ -1,4 +1,7 @@
 
+## 0.3.0
+
+    * Add caching on a per-type basis for more fine tuning of performance.
     * Add explicit handling of "Project", "Workspace", "Release" and "TestCase"
       API types.
     * Change all get_by_name to be get_by_formatted_id
