@@ -244,11 +244,9 @@ class BaseRallyModel(object):
 
         url = "{0}.js?{1}pagesize=100&start={2}&fetch=true".format(
                         cls.rally_name.lower(), query_arg, start_index)
-        import time
-        s=  time.time()
+
         query_result_dict = get_accessor().make_api_call(url)
-        s2 = time.time()
-        print s2-s
+
         if query_result_dict['QueryResult']['Errors']:
             raise Exception('Errors in query: {0}'.format(
                              query_result_dict['QueryResult']['Errors']))
@@ -404,18 +402,21 @@ class HierarchicalRequirement(BaseRallyModel):
     sub_objects_dynamic_loader = {'tasks': 'Tasks', 'children': 'Children'}
 
     @classmethod
-    def get_all_in_kanban_state(cls, kanban_state):
+    def get_all_in_kanban_states(cls, kanban_states):
         """
         Get all the stories in the given kanban_state.
 
         :param kanban_state:
-            The kanban state to search on.
+            A list of kanban states to search on.
 
         :returns:
             A list of ``Story`` objects, as returned by get_all
         """
-        clauses = ['KanbanState = "{0}"'.format(kanban_state)]
-        return cls.get_all(clauses)
+        or_clauses = ['KanbanState = "{0}"'.format(state) \
+                      for state in kanban_states]
+        clauses = get_query_clauses(or_clauses, ' or ')
+
+        return cls.get_all([clauses])
 
 
 class Defect(BaseRallyModel):
@@ -423,18 +424,21 @@ class Defect(BaseRallyModel):
     sub_objects_dynamic_loader = {'tasks': 'Tasks'}
 
     @classmethod
-    def get_all_in_kanban_state(cls, kanban_state):
+    def get_all_in_kanban_states(cls, kanban_states):
         """
         Get all the defects in the given kanban_state.
 
         :param kanban_state:
-            The kanban state to search on.
+            A list of kanban states to search on.
 
         :returns:
             A list of ``Defect`` objects, as returned by get_all
         """
-        clauses = ['KanbanState = "{0}"'.format(kanban_state)]
-        return cls.get_all(clauses)
+        or_clauses = ['KanbanState = "{0}"'.format(state) \
+                      for state in kanban_states]
+        clauses = get_query_clauses(or_clauses, ' or ')
+
+        return cls.get_all([clauses])
 
 
 class User(BaseRallyModel):

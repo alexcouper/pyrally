@@ -10,9 +10,9 @@ def get_inherited_class_object():
     return MockStoryModel
 
 
-def test_get_all_in_kanban_state():
+def test_get_all_in_kanban_states():
     """
-    Test :py:meth:`~.HierarchicalRequirement.get_all_in_kanban_state`.
+    Test :py:meth:`~.HierarchicalRequirement.get_all_in_kanban_states`.
 
     Test that:
         * Uses the correct clause
@@ -20,7 +20,7 @@ def test_get_all_in_kanban_state():
     """
     MockStory = get_inherited_class_object()
     MockStory.get_all = Mock()
-    response = MockStory.get_all_in_kanban_state('Kanban State Name')
+    response = MockStory.get_all_in_kanban_states(['Kanban State Name'])
 
     assert_equal(response, MockStory.get_all.return_value)
     assert_equal(MockStory.get_all.call_args[0],
