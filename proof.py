@@ -1,3 +1,5 @@
+import time
+
 from pyrally.settings import KANBAN_STATES
 from pyrally.client import RallyAPIClient
 from pyrally import settings
@@ -7,17 +9,30 @@ rac = RallyAPIClient(settings.RALLY_USERNAME,
                      settings.RALLY_PASSWORD,
                      settings.BASE_URL)
 
+def print_times(time_list):
+    last_t = 0
+    for i, t in enumerate(time_list):
+        if last_t:
+            print i, t-last_t
+        last_t = t
 
-story = rac.get_story_by_name('us12')
-if story:
-    print story.title
-    story.update(Name='Why me?')
-    story.update_rally()
+Story.set_cache_timeout(100)
 
-for i in xrange(0, 21):
-    story = Story.get_by_name('us' + str(i))
-    if story:
-        story.delete()
+times = []
+
+times.append(time.time())
+
+Story.get_all()
+
+times.append(time.time())
+
+Story.get_all()[0].tasks
+
+times.append(time.time())
+print_times(times)
+from pyrally.rally_access import MEM_CACHE
+print MEM_CACHE.keys()
+print rac.rally_access.cache_timeouts
 
 
 #all_stories = Story.get_all()

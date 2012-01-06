@@ -131,6 +131,15 @@ class BaseRallyModel(object):
             return object.__getattribute__(self, attr_name)
 
     @classmethod
+    def set_cache_timeout(cls, timeout):
+        """Set the cache timeout for this object type.
+
+        :param timeout:
+            The timeout to set against this object type.
+        """
+        get_accessor().set_cache_timeout(cls.rally_name, timeout)
+
+    @classmethod
     def create_from_ref(cls, reference):
         """Create an instance of ``cls`` by getting data for ``reference``.
 
@@ -235,7 +244,11 @@ class BaseRallyModel(object):
 
         url = "{0}.js?{1}pagesize=100&start={2}&fetch=true".format(
                         cls.rally_name.lower(), query_arg, start_index)
+        import time
+        s=  time.time()
         query_result_dict = get_accessor().make_api_call(url)
+        s2 = time.time()
+        print s2-s
         if query_result_dict['QueryResult']['Errors']:
             raise Exception('Errors in query: {0}'.format(
                              query_result_dict['QueryResult']['Errors']))
@@ -341,6 +354,7 @@ class BaseRallyModel(object):
                                  response['CreateResult']['Errors']))
             reference = response['CreateResult']['Object']['_ref']
             if refresh:
+                self.delete_from_cache()
                 new_data = get_accessor().make_api_call(reference, True)
                 self.rally_data = new_data[self.rally_name]
         return response
@@ -356,6 +370,11 @@ class BaseRallyModel(object):
         if response['OperationResult']['Errors']:
             raise Exception('Errors in delete: {0}'.format(
                                  response['OperationResult']['Errors']))
+        self.delete_from_cache()
+
+    def delete_from_cache(self):
+        """Remove this item from the cache"""
+        get_accessor().delete_from_cache(self.rally_name, self.ref)
 
 
 class Artifact(BaseRallyModel):

@@ -16,7 +16,7 @@ def test_story_flow():
                         'point to a community version (ie '
                         'community.rallydev.com).')
     rally_access.ACCESSOR = None
-    rally_access.MEM_CACHE = {}
+    rally_access.MEM_CACHE.clear()
     RallyAPIClient(settings.RALLY_USERNAME,
                    settings.RALLY_PASSWORD,
                    settings.BASE_URL)
@@ -40,13 +40,13 @@ def test_story_flow():
     s.update_rally()
     # Check that the edit has taken place
     # Delete the cache so we can be sure we're getting it from Rally.
-    rally_access.MEM_CACHE = {}
+    rally_access.MEM_CACHE.clear()
     s2 = Story.get_by_formatted_id(s.FormattedID)
     assert_equal(s2.Name, new_name)
     # Delete the story
     s2.delete()
     # Delete the cache so we can be sure we're getting it from Rally.
-    rally_access.MEM_CACHE = {}
+    rally_access.MEM_CACHE.clear()
     # Check the story no longer exists.
     s3 = Story.get_by_formatted_id(s.FormattedID)
     assert_equal(s3, None)
