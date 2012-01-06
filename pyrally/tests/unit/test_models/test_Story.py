@@ -1,18 +1,18 @@
 from mock import Mock
 from nose.tools import assert_equal
 
-from pyrally.models import Story
+from pyrally.models import HierarchicalRequirement
 
 
 def get_inherited_class_object():
-    class MockStoryModel(Story):
+    class MockStoryModel(HierarchicalRequirement):
         rally_name = 'FakeRallyName'
     return MockStoryModel
 
 
 def test_get_all_in_kanban_state():
     """
-    Test :py:meth:`~.Story.get_all_in_kanban_state`.
+    Test :py:meth:`~.HierarchicalRequirement.get_all_in_kanban_state`.
 
     Test that:
         * Uses the correct clause
