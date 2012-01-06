@@ -83,7 +83,7 @@ def test_make_api_call_full_url_cached(urllib2):
 
     assert_equal(response, 'Data')
     assert_equal(my_accessor.make_url_safe.call_args[0], ('some-url',))
-    assert_equal(my_accessor.get_from_cache.call_args[0], ('safe-url'))
+    assert_equal(my_accessor.get_from_cache.call_args[0], ('safe-url',))
     assert_false(urllib2.urlopen.called)
 
 
@@ -97,23 +97,31 @@ def test_make_api_call_partial_url_not_cached(simplejson, urllib2):
         * makes a call to the API via urllib.
         * prepends the api_url to the partial url.
         * makes the url given safe.
+        * stores the new data in the cache.
     """
     MEM_CACHE.clear()
 
     my_accessor = RallyAccessor('uname', 'pword', 'base_url')
     my_accessor.api_url = 'http://dummy_url/'
 
+    my_accessor.get_from_cache = Mock()
+    my_accessor.set_to_cache = Mock()
     my_accessor.make_url_safe = Mock()
     my_accessor.make_url_safe.return_value = 'safe-url'
+    my_accessor.get_from_cache.return_value = False
+
     urllib2.urlopen().read.return_value = 'RAW_DATA'
     simplejson.loads.return_value = 'python_dict'
 
-    response = my_accessor.make_api_call('some-url', full_url=False)
+    response = my_accessor.make_api_call('some-url', full_url=True)
 
     assert_equal(response, 'python_dict')
     assert_equal(my_accessor.make_url_safe.call_args[0], ('some-url',))
     assert_equal(urllib2.urlopen.call_args[0], (urllib2.Request.return_value,))
     assert_equal(simplejson.loads.call_args[0], ('RAW_DATA',))
+    assert_equal(my_accessor.get_from_cache.call_args[0], ('safe-url',))
+    assert_equal(my_accessor.set_to_cache.call_args[0], ('safe-url',
+                                                         'python_dict'))
 
 
 def test_set_cache_timeout():
@@ -173,10 +181,76 @@ def test_get_cacheable_info():
         assert_equal(my_accessor.get_cacheable_info(full_url), expected_tuple)
 
 
-get_cacheable_info
 def test_get_from_cache_retrieves_correctly():
-    pass
+    """
+    Test ``get_from_cache``.
+
+    Tests that :py:meth:`~.RallyAccessor.get_from_cache`:
+        * returns the data at the specified cache location if present
+        * returns False if not present
+    """
+    MEM_CACHE.clear()
+    MEM_CACHE['cache_key']['cache_lookup'] = ('data', time.time())
+
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
+    my_accessor.get_cacheable_info = Mock()
+    my_accessor.cache_timeouts = Mock()
+    my_accessor.cache_timeouts.get.return_value = 10
+
+    for (key, index), expected_result in [
+                                    (('cache_key', 'cache_lookup'), 'data'),
+                                    (('another_key', 'another_lookup'), False),
+                                    ]:
+        my_accessor.get_cacheable_info.reset_mock()
+        my_accessor.get_cacheable_info.return_value = (key, index)
+
+        assert_equal(my_accessor.get_from_cache('url'), expected_result)
+
+        assert_equal(my_accessor.get_cacheable_info.call_args[0], ('url',))
+        assert_equal(my_accessor.cache_timeouts.get.call_args[0],
+                           (key, my_accessor.default_cache_timeout))
 
 
-def set_to_cache_adds_correctly():
-    pass
+def test_get_from_cache_returns_false_if_out_of_date():
+    """
+    Test ``get_from_cache``.
+
+    Tests that :py:meth:`~.RallyAccessor.get_from_cache`:
+        * returns False if data is out of date
+    """
+    MEM_CACHE.clear()
+    MEM_CACHE['cache_key']['cache_lookup'] = ('data', 0)
+
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
+    my_accessor.get_cacheable_info = Mock()
+    my_accessor.cache_timeouts = Mock()
+    my_accessor.cache_timeouts.get.return_value = 0
+
+    my_accessor.get_cacheable_info.return_value = ('cache_key', 'cache_lookup')
+
+    assert_equal(my_accessor.get_from_cache('url'), False)
+
+
+@patch('pyrally.rally_access.time')
+def test_set_to_cache_adds_correctly(time_import):
+    """
+    Test ``set_to_cache``.
+
+    Tests that :py:meth:`~.RallyAccessor.set_to_cache`:
+        * adds the given data to the cache.
+    """
+    MEM_CACHE.clear()
+
+    my_accessor = RallyAccessor('uname', 'pword', 'base_url')
+    my_accessor.get_cacheable_info = Mock()
+    my_accessor.get_cacheable_info.return_value = ('cache_key', 'cache_lookup')
+
+    my_accessor.set_to_cache('url', 'set_to_cache_test')
+
+    assert_equal(my_accessor.get_cacheable_info.call_args[0], ('url',))
+    assert_equal(MEM_CACHE,
+                 {'cache_key':
+                    {'cache_lookup':
+                        ('set_to_cache_test',
+                         time_import.time.return_value)}})
+
