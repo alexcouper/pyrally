@@ -88,8 +88,7 @@ def test_make_api_call_full_url_cached(urllib2):
 
 
 @patch('pyrally.rally_access.urllib2')
-@patch('pyrally.rally_access.simplejson')
-def test_make_api_call_partial_url_not_cached(simplejson, urllib2):
+def test_make_api_call_partial_url_not_cached(urllib2):
     """
     Test ``make_api_call`` with partial url, not cached.
 
@@ -107,18 +106,18 @@ def test_make_api_call_partial_url_not_cached(simplejson, urllib2):
     my_accessor.get_from_cache = Mock()
     my_accessor.set_to_cache = Mock()
     my_accessor.make_url_safe = Mock()
+    my_accessor._get_json_response = Mock()
     my_accessor.make_url_safe.return_value = 'safe-url'
     my_accessor.get_from_cache.return_value = False
 
-    urllib2.urlopen().read.return_value = 'RAW_DATA'
-    simplejson.loads.return_value = 'python_dict'
+    my_accessor._get_json_response.return_value = 'python_dict'
 
     response = my_accessor.make_api_call('some-url', full_url=True)
 
     assert_equal(response, 'python_dict')
     assert_equal(my_accessor.make_url_safe.call_args[0], ('some-url',))
-    assert_equal(urllib2.urlopen.call_args[0], (urllib2.Request.return_value,))
-    assert_equal(simplejson.loads.call_args[0], ('RAW_DATA',))
+    assert_equal(my_accessor._get_json_response.call_args[0],
+                 (urllib2.Request.return_value,))
     assert_equal(my_accessor.get_from_cache.call_args[0], ('safe-url',))
     assert_equal(my_accessor.set_to_cache.call_args[0], ('safe-url',
                                                          'python_dict'))

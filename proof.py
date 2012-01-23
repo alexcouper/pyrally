@@ -8,9 +8,10 @@ rac = RallyAPIClient(settings.RALLY_USERNAME,
                      settings.RALLY_PASSWORD,
                      settings.BASE_URL)
 
-stories = rac.get_all_in_kanban_states(['In QA Testing',
-                                        'In Development'])['stories']
-print len(stories)
+print settings.BASE_URL, settings.RALLY_USERNAME
+#stories = rac.get_all_in_kanban_states(['In QA Testing',
+                                    #    'In Development'])['stories']
+#print len(stories)
 # def print_times(time_list):
 #     last_t = 0
 #     for i, t in enumerate(time_list):

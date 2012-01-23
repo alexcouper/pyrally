@@ -52,9 +52,7 @@ class RallyAccessor(object):
         password_manager.add_password(
                 None, base_url, username, password
         )
-        auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
-        opener = urllib2.build_opener(auth_handler)
-        urllib2.install_opener(opener)
+        self.auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
         self.cache_timeouts = {}
         self.default_cache_timeout = CACHE_TIMEOUT
 
@@ -220,11 +218,15 @@ class RallyAccessor(object):
         """Call urlopen with a request object and return a dictionary.
 
         :param request_obj:
-            A ``urllib2.request`` object to call urlopen with.
+            A ``urllib2.request`` object to call opener.open with.
 
         :returns:
             A dictionary loaded with json response content from Rally.
         """
-        with contextlib.closing(urllib2.urlopen(request_obj)) as open_url:
+        opener = urllib2.build_opener(self.auth_handler)
+        with contextlib.closing(opener.open(request_obj)) as open_url:
             response = open_url.read()
+        # Reset the auth_handler as urllib2 doesn't seem to want to behave
+        # properly.
+        self.auth_handler.retried = 0
         return simplejson.loads(response)
