@@ -1,3 +1,7 @@
+## 0.3.3
+
+    * Add function get_rally_url to Defect and HierarchicalRequirement objects.
+
 ## 0.3.2
 
     * Change the way we use urllib2 so that retries is reset after a succesful

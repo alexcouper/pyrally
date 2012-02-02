@@ -9,6 +9,11 @@ rac = RallyAPIClient(settings.RALLY_USERNAME,
                      settings.BASE_URL)
 
 print settings.BASE_URL, settings.RALLY_USERNAME
+
+story = Story.get_by_formatted_id('us627')
+print story.get_rally_url()
+
+
 #stories = rac.get_all_in_kanban_states(['In QA Testing',
                                     #    'In Development'])['stories']
 #print len(stories)
