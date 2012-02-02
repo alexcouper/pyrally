@@ -423,7 +423,8 @@ class HierarchicalRequirement(BaseRallyModel):
         clauses = ['Iteration.Name = "{0}"'.format(iteration_name)]
         return cls.get_all(clauses)
 
-    def get_rally_url(self):
+    @property
+    def rally_url(self):
         story_id = self.ref.split('/')[-1].replace('.js', '')
         base_url = get_accessor().base_url
         url = "{0}slm/rally.sp#/detail/userstory/{1}".format(base_url,
@@ -452,7 +453,8 @@ class Defect(BaseRallyModel):
 
         return cls.get_all([clauses])
 
-    def get_rally_url(self):
+    @property
+    def rally_url(self):
         defect_id = self.ref.split('/')[-1].replace('.js', '')
         base_url = get_accessor().base_url
         url = "{0}slm/rally.sp#/defect/userstory/{1}".format(base_url,

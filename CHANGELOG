@@ -1,3 +1,7 @@
+## 0.3.4
+
+    * Change function get_rally_url to be a property called rally_url.
+
 ## 0.3.3
 
     * Add function get_rally_url to Defect and HierarchicalRequirement objects.

@@ -9,7 +9,7 @@ setup(
     name='pyrally',
     description='Rally API Client',
     long_description=long_description,
-    version='0.3.3',
+    version='0.3.4',
     author='Alex Couper',
     author_email='amcouper@gmail.com',
     url='https://github.com/alexcouper/pyrally',
