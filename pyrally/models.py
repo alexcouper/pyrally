@@ -457,7 +457,7 @@ class Defect(BaseRallyModel):
     def rally_url(self):
         defect_id = self.ref.split('/')[-1].replace('.js', '')
         base_url = get_accessor().base_url
-        url = "{0}slm/rally.sp#/defect/userstory/{1}".format(base_url,
+        url = "{0}slm/rally.sp#/detail/defect/{1}".format(base_url,
                                                              defect_id)
         return url
 

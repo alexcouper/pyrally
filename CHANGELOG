@@ -1,3 +1,8 @@
+
+## 0.3.4.1
+
+    * Fix rally_url for defects.
+
 ## 0.3.4
 
     * Change function get_rally_url to be a property called rally_url.
