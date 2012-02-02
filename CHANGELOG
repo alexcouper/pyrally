@@ -1,4 +1,8 @@
 
+## 0.3.5
+
+    * Add __setattr__ override to redirect present var names to rally_data.
+
 ## 0.3.4.1
 
     * Fix rally_url for defects.

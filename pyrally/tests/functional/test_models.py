@@ -1,5 +1,5 @@
 from mock import patch, Mock
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_false
 
 from pyrally.models import BaseRallyModel, ReferenceNotFoundException
 
@@ -113,3 +113,22 @@ def test_get_attribute_dynamically_loading_objects_no_reference(
     assert_equal(API_OBJECT_TYPES.get.call_args[0],
                  ('api_type', BaseRallyModel))
     assert_equal(mock_create_from_ref.call_args[0], ('some_reference', ))
+
+
+def test_set_attr_behaviour():
+    """Test ``__setattr__`` applies changes correctly.
+
+    Test that:
+        * If the key is present in rally_data, it is updated
+        * Otherwise the attribute is updated on the object
+    """
+    brm = BaseRallyModel({'a': '1', 'b': '2'})
+    brm.x = 'fred'
+
+    assert_equal(brm.x, 'fred')
+    assert_false('x' in brm.rally_data)
+
+    brm.a = 'changed'
+    assert_equal(brm.rally_data['a'], 'changed')
+    # And this works because of __getattribute__'s redirect:
+    assert_equal(brm.a, 'changed')

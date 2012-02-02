@@ -130,6 +130,18 @@ class BaseRallyModel(object):
                 return self._full_sub_objects[attr_name]
             return object.__getattribute__(self, attr_name)
 
+    def __setattr__(self, name, value):
+        """
+        Set the attribute ``name`` to ``value``.
+
+        If the value is present as a key in in self.rally_data, then we'll
+        set it there, otherwise we will set it on self.
+        """
+        if hasattr(self, 'rally_data') and name in self.rally_data:
+            self.rally_data[name] = value
+        else:
+            super(BaseRallyModel, self).__setattr__(name, value)
+
     @classmethod
     def set_cache_timeout(cls, timeout):
         """Set the cache timeout for this object type.
