@@ -16,7 +16,7 @@ Or, by importing the model objects, it is possible to:
     * get a story/task/defect/iteration/user by name
     * update a story/task/defect/iteration/user attributes in Rally
     * delete a story/task/defect/iteration/user from Rally
-    * creaete a new story/task/defect/iteration/user in Rally.
+    * create a new story/task/defect/iteration/user in Rally.
 
 Full documentation can be found here:
     http://readthedocs.org/docs/pyrally/en/latest/

@@ -24,6 +24,7 @@ def get_accessor(username=None, password=None, rally_base_url=None):
                             ' before accessing without username, password and'
                             'rally_base_url\n'
                             'Try instantiating a client object first.')
+        print username, password
         ACCESSOR = RallyAccessor(username, password, rally_base_url)
     return ACCESSOR
 

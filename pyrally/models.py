@@ -352,7 +352,9 @@ class BaseRallyModel(object):
                                                     True,
                                                     method='POST',
                                                     data=data)
-
+            if response['OperationResult']['Errors']:
+                raise Exception('Errors in query: {0}'.format(
+                                 response['OperationResult']['Errors']))
         else:
             data = {self.rally_name: self.rally_data}
             url = "{0}/create.js".format(self.rally_name.lower())
